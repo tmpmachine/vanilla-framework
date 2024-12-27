@@ -2,6 +2,8 @@ Version: 1
 
 Setup:
 ```html
+<!-- written in divless HTML format -->
+<!-- https://github.com/tmpmachine/divless-html -->
 <body>
 
 [ data-view-name="main" .is-hidden
