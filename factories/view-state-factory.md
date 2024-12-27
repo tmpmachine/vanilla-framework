@@ -1,6 +1,20 @@
 Version: 1
 
 Setup:
+```html
+<body>
+
+[ data-view-name="main" .is-hidden
+  page 1
+  [btn onclick="viewStateMain.Update({name:'about'})" 'about']
+]
+[ data-view-name="about" .is-hidden
+  page 2
+  [btn onclick="viewStateMain.Update({name:'main'})" 'main']
+]
+
+</body>
+```
 ```js
 let viewStateMain = ViewStateFactory({
   hiddenClass: 'is-hidden',
