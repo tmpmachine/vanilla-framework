@@ -1,7 +1,8 @@
-/* v1 */
+/* v2 */
 function ListViewFactory(opt = {
     containerEl: null,
     extraParams: null,
+    options: null,
     retrieveDataCallback: null,
     builderCallback: null,
     templateSelector: null,
@@ -9,7 +10,7 @@ function ListViewFactory(opt = {
     lookupCallback: null,
     eventDataCallback: null,
 }) {
-    
+
     opt = {
         ...{
             eventDataCallback: defaultEventDataCallback,
@@ -23,8 +24,8 @@ function ListViewFactory(opt = {
     let SELF = {
         Refresh,
         RefreshItem,
-        GetExtraParams: () => JSON.parse(JSON.stringify(local.extraParams)),
-        SetExtraParams,
+        GetOptions: () => JSON.parse(JSON.stringify(local.extraParams)),
+        SetOptions,
         SetContainer: (node) => {
             local.containerEl = node;
             listContainer.SetContainer(node);
@@ -34,7 +35,7 @@ function ListViewFactory(opt = {
     // # local
     let local = {
         containerEl: opt?.containerEl,
-        extraParams: opt?.extraParams ?? {},
+        extraParams: opt?.extraParams ?? opt?.options ?? {},
     };
 
     // # list
@@ -46,15 +47,15 @@ function ListViewFactory(opt = {
 
     // # function
 
-    function defaultEventDataCallback({itemEl}) {
+    function defaultEventDataCallback({ itemEl }) {
         return itemEl?.dataset.id ? parseInt(itemEl.dataset.id) : null;
     }
-    
+
     function defaultLookupCallback(containerEl, item) {
         return containerEl.querySelector(`[data-id="${item.id}"]`);
     }
 
-    function SetExtraParams(extraParams) {
+    function SetOptions(extraParams) {
         for (let key in extraParams) {
             if (typeof (local.extraParams[key]) != 'undefined') {
                 local.extraParams[key] = extraParams[key];
@@ -65,7 +66,7 @@ function ListViewFactory(opt = {
     function registerEventListeners() {
         let { containerEl } = local;
         if (containerEl && !containerEl?.userData.isEventRegistered) {
-            containerEl.addEventListener('pointerdown', HandleClickEvt);
+            containerEl.addEventListener('click', HandleClickEvt);
             containerEl.userData.isEventRegistered = true;
         }
     }
@@ -88,8 +89,8 @@ function ListViewFactory(opt = {
         let callback = opt?.eventsMap?.[action];
         callback?.({
             evt,
-            itemEl, 
-            data: opt?.eventDataCallback?.({evt, itemEl}) ?? null,
+            itemEl,
+            data: opt?.eventDataCallback?.({ evt, itemEl }) ?? null,
         });
     }
 
