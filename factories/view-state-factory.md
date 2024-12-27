@@ -19,6 +19,8 @@ Setup:
   [btn onclick="viewStateMain.Update({name:'main'})" 'main']
 ]
 
+<script src="/libs/dom-states.js"></script>
+
 </body>
 ```
 ```js
