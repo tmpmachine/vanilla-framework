@@ -6,6 +6,10 @@ Setup:
 <!-- https://github.com/tmpmachine/divless-html -->
 <body>
 
+<style>
+  .is-hidden{display:none}
+</style>
+
 [ data-view-name="main" .is-hidden
   page 1
   [btn onclick="viewStateMain.Update({name:'about'})" 'about']
