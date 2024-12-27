@@ -1,7 +1,7 @@
 Version: 1
 
 Setup:
-```
+```js
 let viewStateMain = ViewStateFactory({
   hiddenClass: 'is-hidden',
   // transitionTimeout: 1,
@@ -27,7 +27,7 @@ let viewStateMain = ViewStateFactory({
 ```
 
 Updating the screen:
-```
+```js
 viewStateMain.Update_({
   // name: 'main',
 });
