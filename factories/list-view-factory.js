@@ -1,7 +1,6 @@
-/* v2 */
+/* v3 */
 function ListViewFactory(opt = {
     containerEl: null,
-    extraParams: null,
     options: null,
     retrieveDataCallback: null,
     builderCallback: null,
@@ -24,7 +23,8 @@ function ListViewFactory(opt = {
     let SELF = {
         Refresh,
         RefreshItem,
-        GetOptions: () => JSON.parse(JSON.stringify(local.extraParams)),
+        GetOptions: () => JSON.parse(JSON.stringify(local.options)),
+        Search,
         SetOptions,
         SetContainer: (node) => {
             local.containerEl = node;
@@ -35,17 +35,42 @@ function ListViewFactory(opt = {
     // # local
     let local = {
         containerEl: opt?.containerEl,
-        extraParams: opt?.extraParams ?? opt?.options ?? {},
+        options: opt?.options ?? {},
     };
 
-    // # list
     let listContainer = new ListContainerBuilder({
         template: opt?.templateSelector ?? '',
         builder: (node, item) => buildListItem(node, item),
         lookup: (containerEl, item) => opt?.lookupCallback?.(containerEl, item),
     });
 
+    let debounceRefresh = debounce(150, () => {
+        Refresh();
+    });
+
     // # function
+
+    function debounce(time, callback) {
+        let timeoutId;
+        return function(...args) {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            callback(...args);
+          }, time);
+        };
+    }
+
+    // # search
+    function Search(searchTerms) {
+        searchTerms = searchTerms.trim();
+
+        if (searchTerms.length == 1) {
+            local.options['searchTerms'] = '';
+        } else {
+            local.options['searchTerms'] = searchTerms;
+            debounceRefresh();
+        }
+    }
 
     function defaultEventDataCallback({ itemEl }) {
         return itemEl?.dataset.id ? parseInt(itemEl.dataset.id) : null;
@@ -55,10 +80,10 @@ function ListViewFactory(opt = {
         return containerEl.querySelector(`[data-id="${item.id}"]`);
     }
 
-    function SetOptions(extraParams) {
-        for (let key in extraParams) {
-            if (typeof (local.extraParams[key]) != 'undefined') {
-                local.extraParams[key] = extraParams[key];
+    function SetOptions(options) {
+        for (let key in options) {
+            if (typeof (local.options[key]) != 'undefined') {
+                local.options[key] = options[key];
             }
         }
     }
@@ -104,7 +129,7 @@ function ListViewFactory(opt = {
 
         registerEventListeners();
 
-        let items = opt?.retrieveDataCallback?.(local.extraParams) ?? [];
+        let items = opt?.retrieveDataCallback?.(local.options) ?? [];
         listContainer.Refresh(items);
     }
 
