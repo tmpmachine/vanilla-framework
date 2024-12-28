@@ -1,16 +1,18 @@
-/* v2 */
+/* v3 */
 function DialogFactory(opt = {}) {
 
 	// # self
 	let SELF = {
 		Show_,
 		GetOptions: () => JSON.parse(JSON.stringify(local.options)),
+		GetDialog: () => local.dialogEl,
         SetOptions,
 	};
 
 	// # local
 	let local = {
         options: opt.options ?? {},
+		dialogEl: null,
 		dialogOptEdit: {
 			defaultValue: null,
 			templateSelector: opt.templateSelector,
@@ -47,10 +49,13 @@ function DialogFactory(opt = {}) {
 
 	async function readDialogEdit(dialogEl) {
 		let formData = getDialogEditFormData(dialogEl);
+		let returnValue = dialogEl.returnValue; 
+
+		local.dialogEl = null;
 
 		return {
 			...formData,
-			returnValue: dialogEl.returnValue,
+			returnValue,
 		};
 	}
 
@@ -66,6 +71,8 @@ function DialogFactory(opt = {}) {
 				extraParams,
 				formValuesObject,
 			};
+
+			local.dialogEl = dialogEl;
 
 			if (local.eventsMap) {
 				local.eventsMap.onclick = {
