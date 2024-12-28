@@ -76,8 +76,8 @@ function DialogFactory(opt = {}) {
 
 			if (local.eventsMap) {
 				local.eventsMap.onclick = {
-					'close-dialog': () => dialogEl.close(),
 					...local.eventsMap.onclick,
+					'close-dialog': () => dialogEl.close(),
 				}
 			};
 
