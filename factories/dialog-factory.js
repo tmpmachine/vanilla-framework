@@ -1,18 +1,16 @@
-/* v1 */
-function DialogFactory(opt) {
+/* v2 */
+function DialogFactory(opt = {}) {
 
 	// # self
 	let SELF = {
 		Show_,
+		GetOptions: () => JSON.parse(JSON.stringify(local.options)),
+        SetOptions,
 	};
 
 	// # local
 	let local = {
-		extraData: {
-			id: null,
-			slots: null,
-			dialogEl: null,
-		},
+        options: opt.options ?? {},
 		dialogOptEdit: {
 			defaultValue: null,
 			templateSelector: opt.templateSelector,
@@ -22,6 +20,15 @@ function DialogFactory(opt) {
 		// # dom events, # events
 		eventsMap: opt.eventsMap ?? {},
 	};
+
+	// # function
+	function SetOptions(options) {
+        for (let key in options) {
+            if (typeof (local.options[key]) != 'undefined') {
+                local.options[key] = options[key];
+            }
+        }
+    }
 
 	function getDialogEditFormData(dialogEl) {
 		let form = dialogEl.querySelector("form");
@@ -60,11 +67,9 @@ function DialogFactory(opt) {
 				formValuesObject,
 			};
 
-			local.extraData.dialogEl = dialogEl;
-
 			if (local.eventsMap) {
 				local.eventsMap.onclick = {
-					'close-dialog': () => local.extraData.dialogEl.close(),
+					'close-dialog': () => dialogEl.close(),
 					...local.eventsMap.onclick,
 				}
 			};
