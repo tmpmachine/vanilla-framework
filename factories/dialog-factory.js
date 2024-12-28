@@ -6,12 +6,12 @@ function DialogFactory(opt = {}) {
 		Show_,
 		GetOptions: () => JSON.parse(JSON.stringify(local.options)),
 		GetDialog: () => local.dialogEl,
-        SetOptions,
+		SetOptions,
 	};
 
 	// # local
 	let local = {
-        options: opt.options ?? {},
+		options: opt.options ?? {},
 		dialogEl: null,
 		dialogOptEdit: {
 			defaultValue: null,
@@ -25,12 +25,12 @@ function DialogFactory(opt = {}) {
 
 	// # function
 	function SetOptions(options) {
-        for (let key in options) {
-            if (typeof (local.options[key]) != 'undefined') {
-                local.options[key] = options[key];
-            }
-        }
-    }
+		for (let key in options) {
+			if (typeof (local.options[key]) != 'undefined') {
+				local.options[key] = options[key];
+			}
+		}
+	}
 
 	function getDialogEditFormData(dialogEl) {
 		let form = dialogEl.querySelector("form");
@@ -49,7 +49,7 @@ function DialogFactory(opt = {}) {
 
 	async function readDialogEdit(dialogEl) {
 		let formData = getDialogEditFormData(dialogEl);
-		let returnValue = dialogEl.returnValue; 
+		let returnValue = dialogEl.returnValue;
 
 		local.dialogEl = null;
 
