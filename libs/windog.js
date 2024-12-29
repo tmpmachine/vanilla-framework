@@ -1,4 +1,4 @@
-/* v1 */
+/* v2 */
 let windog = (function() {
 
   let $ = document.querySelector.bind(document);
@@ -10,23 +10,20 @@ let windog = (function() {
     showDialogAsync,
   };
 
-  let local = {
-    inputType: 11, // 111: default/mouse, 22: touch
-  }
   // # options
   
   let dialogOptions = {
     alert: {
-      templateSelector: '#tmp-dialog-alert',
+      templateSelector: '._dialogAlert',
     },
     confirm: {
-      templateSelector: '#tmp-dialog-confirm',
+      templateSelector: '._dialogConfirm',
       onClose: (dialogEl) => {
         return (dialogEl.returnValue == 'ok');
       },
     },
     prompt: {
-      templateSelector: '#tmp-dialog-prompt',
+      templateSelector: '._dialogPrompt',
       onClose: (dialogEl) => {
         if (dialogEl.returnValue == 'ok') {
           return dialogEl.querySelector('[data-slot="input"]')?.value;
@@ -117,8 +114,8 @@ let windog = (function() {
         },
       };
       let mixedOptions = Object.assign(defaultOptions, dialogOptions, extraData, persistentOptions);
-      let {allowOutsideClick, templateSelector} = mixedOptions;
-      let el = $(templateSelector).content.cloneNode(true);
+      let {allowOutsideClick, template, templateSelector} = mixedOptions;
+      let el = getTemplateEl(templateSelector, template);
       let dialogEl = el.querySelector('dialog');
       let dialogData = {
         dialogItem: mixedOptions,
@@ -139,6 +136,16 @@ let windog = (function() {
 
       onShow?.(dialogEl, extraData, mixedOptions);
     });
+  }
+
+  function getTemplateEl(templateSelector, template) {
+    if (templateSelector) {
+      return $(templateSelector).content.cloneNode(true);
+    }
+
+    let docEl = document.createElement('template');
+    docEl.innerHTML = template;
+    return docEl.content.cloneNode(true);
   }
   
   async function onCancel(dialogEl) {
