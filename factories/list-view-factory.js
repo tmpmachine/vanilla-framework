@@ -1,4 +1,4 @@
-/* v3 */
+/* v4 */
 function ListViewFactory(opt = {
     containerEl: null,
     options: null,
@@ -135,7 +135,7 @@ function ListViewFactory(opt = {
 
     // # build
     function buildListItem(node, item) {
-        let slots = utils.DOMSlots(node);
+        let slots = DOMSlots(node);
         return opt?.builderCallback?.(slots, item);
     }
 
