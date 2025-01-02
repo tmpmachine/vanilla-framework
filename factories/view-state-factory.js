@@ -1,4 +1,4 @@
-/* v1 */
+/* v2 */
 function ViewStateFactory(opt={
   selector: 'body',
   hiddenClass: 'is-hidden',
