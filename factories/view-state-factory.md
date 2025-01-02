@@ -1,4 +1,4 @@
-Version: 1
+Version: 3
 
 Setup:
 ```html
@@ -24,7 +24,8 @@ Setup:
 </body>
 ```
 ```js
-let viewStateMain = ViewStateFactory({
+let viewStateRoot = ViewStateFactory({
+  selector: 'body > [data-view-name]',
   hiddenClass: 'is-hidden',
   // transitionTimeout: 1,
   onHide: (node) => {
@@ -48,9 +49,9 @@ let viewStateMain = ViewStateFactory({
 });
 ```
 
-Updating the screen:
+Initialize/updating the screen:
 ```js
-viewStateMain.Update_({
+viewStateRoot.Update_({
   // name: 'main',
 });
 ```
