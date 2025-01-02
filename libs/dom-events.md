@@ -11,6 +11,6 @@ let eventsMap = {
 };
 ```
 
-```
+```js
 DOMEvents.Listen(eventsMap);
 ```
