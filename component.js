@@ -2,6 +2,7 @@ let compoPrefix = (function() {
   
   // # self
   let SELF = {
+    // Init,
   };
 
   // # local
@@ -10,6 +11,10 @@ let compoPrefix = (function() {
   };
   
   // # function
+
+  function Init() {
+    
+  }
   
   return SELF;
   
