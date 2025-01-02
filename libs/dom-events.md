@@ -10,3 +10,7 @@ let eventsMap = {
   }
 };
 ```
+
+```
+DOMEvents.Listen(eventsMap);
+```
