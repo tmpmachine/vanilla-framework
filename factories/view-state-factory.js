@@ -55,7 +55,7 @@ function ViewStateFactory(opt={
 
                     let hidePromise = new Promise(async resolve => {
                         await new Promise(resolve => window.setTimeout(resolve, transitionTimeout));
-                        node.classList.remove(opt.hiddenClass);
+                        node.classList.remove(hiddenClass);
                         opt.onHide?.(node);
                         screenAnchorNode.content.append(node);
                         resolve();
@@ -84,7 +84,7 @@ function ViewStateFactory(opt={
                     isAnimationStart = false;
                 }, transitionTimeout));
             } else {
-                targetScreen.classList.remove(opt.hiddenClass);
+                targetScreen.classList.remove(hiddenClass);
                 isAnimationStart = false;
             }
 
