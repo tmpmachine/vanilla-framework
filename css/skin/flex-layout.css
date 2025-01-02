@@ -1,0 +1,24 @@
+/* # layout */
+.fx-default{--fx:1rem}
+
+.fx {
+  gap: var(--fx);
+  display: flex;
+  flex-direction: column;
+}
+.fx .fx:not(.fr) {
+  --fx-2: calc(var(--fx) * 0.6);
+  gap: var(--fx-2);
+}
+.fx .fx:not(.fr) .fx:not(.fr) {
+  --fx-3: calc(var(--fx-2) * 0.4);
+  gap: var(--fx-3);
+}
+.fx .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) {
+  --fx-4: calc(var(--fx-3) * 0.55);
+  gap: var(--fx-4);
+}
+.fx .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) {
+  --fx-5: calc(var(--fx-4) * 0.55);
+  gap: var(--fx-5);
+}
