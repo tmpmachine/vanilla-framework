@@ -1,23 +1,23 @@
-/* v2 */
-function ViewStateFactory(opt={
-  selector: 'body',
-  hiddenClass: 'is-hidden',
-  onHide: null,
-  onEnter: null,
+/* v3 */
+function ViewStateFactory(opt = {
+    selector: null,
+    hiddenClass: null,
+    onHide: null,
+    onEnter: null,
 }) {
 
     let isAnimationStart = false;
     let isInitialLoad = true;
-    let selector = opt.selector ?? 'body';
+    let selector = opt.selector;
     let hiddenClass = opt.hiddenClass ?? 'is-hidden';
     let transitionTimeout = opt.transitionTimeout ?? 1;
 
     let screens = DOMStates({
-        selector: `${selector} > [data-view-name]`,
+        selector,
     })
 
     let activeScreen = DOMStates({
-        selector: `${selector} > [data-view-name]:not(template)`,
+        selector: `${selector.trim()}:not(template)`,
     })
 
     let stateManager = screens.clone({
