@@ -25,6 +25,7 @@ index.html
 // # objectives
 let dialogObjectives = DialogFactory({
     templateSelector: '._dialogObjectives',
+    onBeforeClose: (dialogEl) => {},
     onShow: ({slots}) => {
         listViewObjectives.SetContainer(slots.listView);
         listViewObjectives.Refresh();
