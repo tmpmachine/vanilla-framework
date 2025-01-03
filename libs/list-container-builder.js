@@ -1,9 +1,9 @@
-/* v1 */
+/* v2 */
 function ListContainerBuilder(opt) {
   
   let $ = document.querySelector.bind(document);
-  let containerEl = opt.container ? $(opt.container) : document.createDocumentFragment();
-  let templateEl = opt.template ? $(opt.template) : document.createElement('template');
+  let containerEl = $(opt?.container) ?? document.createDocumentFragment();
+  let templateEl = $(opt?.template) ?? document.createElement('template');
   
   if (templateEl === null) throw new Error(`template not found with selector: ${opt.template}`);
    
