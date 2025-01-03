@@ -1,4 +1,4 @@
-/* v4 */
+/* v4.1 */
 function DialogFactory(
 	opt = {
 		onShow: null,
@@ -52,7 +52,6 @@ function DialogFactory(
 	}
 
 	async function validateDialogEdit(dialogEl) {
-		opt.onBeforeClose?.(dialogEl);
 		if (opt.onFormValidate) {
 			return await opt.onFormValidate(dialogEl);
 		}
@@ -62,6 +61,8 @@ function DialogFactory(
 	async function readDialogEdit(dialogEl) {
 		let formData = getDialogEditFormData(dialogEl);
 		let returnValue = dialogEl.returnValue;
+
+		opt.onBeforeClose?.(dialogEl);
 
 		local.dialogEl = null;
 		local.dialogShowObj = null;
