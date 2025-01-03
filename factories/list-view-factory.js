@@ -1,4 +1,4 @@
-/* v4 */
+/* v4.1 */
 function ListViewFactory(opt = {
     containerEl: null,
     options: null,
@@ -82,9 +82,7 @@ function ListViewFactory(opt = {
 
     function SetOptions(options) {
         for (let key in options) {
-            if (typeof (local.options[key]) != 'undefined') {
-                local.options[key] = options[key];
-            }
+            local.options[key] = options[key];
         }
     }
 
