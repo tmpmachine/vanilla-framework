@@ -1,16 +1,13 @@
-/* v3 */
+/* v4 */
 function ViewStateFactory(opt = {
     selector: null,
-    hiddenClass: null,
     onHide: null,
     onEnter: null,
 }) {
 
     let isAnimationStart = false;
-    let isInitialLoad = true;
     let selector = opt.selector;
-    let hiddenClass = opt.hiddenClass ?? 'is-hidden';
-    let transitionTimeout = opt.transitionTimeout ?? 1;
+    let defaultTransitionTimeout = opt.transitionTimeout ?? 1;
 
     let screens = DOMStates({
         selector,
@@ -21,10 +18,14 @@ function ViewStateFactory(opt = {
     })
 
     let stateManager = screens.clone({
-        onUpdate: async (nodes, { name }) => {
-
+        onUpdate: async (nodes, { name, transitionTimeout }) => {
+            
             if (isAnimationStart) return;
 
+            if (!transitionTimeout) {
+                transitionTimeout = defaultTransitionTimeout;
+            }
+            
             let targetScreen = nodes.find(node => node.dataset.viewName == name) ?? nodes[0];
             let targetScreenName = targetScreen.dataset.viewName;
 
@@ -49,13 +50,10 @@ function ViewStateFactory(opt = {
                         node.insertAdjacentElement('beforebegin', screenAnchorNode);
                     }
 
-                    if (!isInitialLoad) {
-                        node.classList.add('is-clean-animation-state');
-                    }
+                    node.classList.add('transition-out');
 
                     let hidePromise = new Promise(async resolve => {
                         await new Promise(resolve => window.setTimeout(resolve, transitionTimeout));
-                        node.classList.remove(hiddenClass);
                         opt.onHide?.(node);
                         screenAnchorNode.content.append(node);
                         resolve();
@@ -69,26 +67,22 @@ function ViewStateFactory(opt = {
 
             if (targetScreen.tagName == 'TEMPLATE') {
                 let node = targetScreen.content.firstElementChild;
+                
                 if (node) {
                     targetScreen.parentNode.append(node); // highest element order
-                }
 
-                if (!isInitialLoad) {
+                    // delay 1ms to allow browser to render initial element state before starting transition
                     window.setTimeout(() => {
-                        node?.classList.remove('is-clean-animation-state');
+                        node.classList.remove('transition-out');
                     }, 1);
                 }
 
-                new Promise(resolve => setTimeout(() => {
+                await new Promise(resolve => setTimeout(() => {
                     resolve();
-                    isAnimationStart = false;
                 }, transitionTimeout));
-            } else {
-                targetScreen.classList.remove(hiddenClass);
-                isAnimationStart = false;
             }
-
-            isInitialLoad = false;
+            
+            isAnimationStart = false;
         }
     });
 
