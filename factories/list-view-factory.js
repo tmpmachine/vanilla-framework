@@ -1,4 +1,4 @@
-/* v4.1 */
+/* v4.2 */
 function ListViewFactory(opt = {
     containerEl: null,
     options: null,
@@ -39,7 +39,8 @@ function ListViewFactory(opt = {
     };
 
     let listContainer = new ListContainerBuilder({
-        template: opt?.templateSelector ?? '',
+        template: opt.template,
+        templateSelector: opt.templateSelector,
         builder: (node, item) => buildListItem(node, item),
         lookup: (containerEl, item) => opt?.lookupCallback?.(containerEl, item),
     });
@@ -133,8 +134,8 @@ function ListViewFactory(opt = {
 
     // # build
     function buildListItem(node, item) {
-        let slots = DOMSlots(node);
-        return opt?.builderCallback?.(slots, item);
+        // let slots = DOMSlots(node);
+        return opt?.builderCallback?.(node, item);
     }
 
     function RefreshItem(item) {
