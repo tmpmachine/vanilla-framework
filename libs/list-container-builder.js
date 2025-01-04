@@ -1,11 +1,9 @@
-/* v2 */
+/* v3 */
 function ListContainerBuilder(opt) {
   
   let $ = document.querySelector.bind(document);
   let containerEl = $(opt?.container) ?? document.createDocumentFragment();
-  let templateEl = $(opt?.template) ?? document.createElement('template');
-  
-  if (templateEl === null) throw new Error(`template not found with selector: ${opt.template}`);
+  let templateEl = getTemplateEl(opt?.templateSelector, opt?.template);
    
   let SELF = {
     Refresh,
@@ -14,6 +12,17 @@ function ListContainerBuilder(opt) {
     SetContainer,
     GetContainer,
   };
+  
+  function getTemplateEl(templateSelector, template = '') {
+    let node = $(templateSelector);
+    if (node) {
+      return node.content.cloneNode(true);
+    }
+
+    let docEl = document.createElement('template');
+    docEl.innerHTML = template;
+    return docEl;
+  }
   
   function SetContainer(el) {
     containerEl = el;
