@@ -48,9 +48,41 @@ let viewStateRoot = ViewStateFactory({
 });
 ```
 
-Initialize/updating the screen:
+# Basic Styling & Transition
+```
+html,body{height:100%}
+body{margin:0;display:flex;flex-direction:column;overflow:hidden}
+
+/* # views */
+[data-view-name] {
+    &{
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+        top: 0;
+        left: 0;
+    }
+    & > .inner {
+        transition: 150ms;
+        overflow: auto;
+        height: inherit;
+    }  
+    &[data-hidden] > .inner{
+        transform: translateX(8px);
+        opacity: 0;
+    } 
+}
+```
+
+# Initialize & Updating the screen
 ```js
+let viewStateRoot = ViewStateFactory({
+  selector: 'body > [data-view-name]',
+  transitionTimeout: 150, // adjust to your screen transition time
+});
+
 viewStateRoot.Update_({
-  // name: 'main',
+  name: 'about',
 });
 ```
