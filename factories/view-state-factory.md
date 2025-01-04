@@ -1,4 +1,4 @@
-Version: 3
+Version: 4
 
 ## Setup
 Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and performance to avoid rendering. The hidden screen container must containt `data-hidden` attribute.
@@ -8,44 +8,23 @@ Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and
 <body>
 
 [ data-view-name="main"
-  page 1
-  [btn onclick="viewStateMain.Update({name:'about'})" 'about']
+  [ .inner
+    page 1
+    [btn onclick="viewStateRoot.Update({name:'about'})" 'about']
+  ]
 ]
 <template data-view-name="about">
 [ data-hidden
-  page 2
-  [btn onclick="viewStateMain.Update({name:'main'})" 'main']
+  [ .inner
+    page 2
+    [btn onclick="viewStateRoot.Update({name:'main'})" 'main']
+  ]
 ]
 </template>
 
 <script src="/libs/dom-states.js"></script>
 
 </body>
-```
-```js
-let viewStateRoot = ViewStateFactory({
-  selector: 'body > [data-view-name]',
-  hiddenClass: 'is-hidden',
-  // transitionTimeout: 1,
-  onHide: (node) => {
-    return;
-    // empty data-slot elements
-    {
-        let slots = utils.DOMSlots(node);
-        Object.entries(slots).forEach(([key, value]) => {
-            let node = value;
-            
-            if (!node.classList.contains('is-autoclear')) return;
-
-            node.replaceChildren();
-        });
-    }
-
-    node.querySelectorAll('form').forEach(e => {
-        e.reset();
-    })
-  }
-});
 ```
 
 # Basic Styling & Transition
@@ -80,8 +59,12 @@ body{margin:0;display:flex;flex-direction:column;overflow:hidden}
 let viewStateRoot = ViewStateFactory({
   selector: 'body > [data-view-name]',
   transitionTimeout: 150, // adjust to your screen transition time
+  onHide: (node) => {
+    // reset form, empty element, reset UI, etc.
+  }
 });
 
+// navigate to certain screen
 viewStateRoot.Update_({
   name: 'about',
 });
