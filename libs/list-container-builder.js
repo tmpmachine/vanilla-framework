@@ -16,7 +16,7 @@ function ListContainerBuilder(opt) {
   function getTemplateEl(templateSelector, template = '') {
     let node = $(templateSelector);
     if (node) {
-      return node.content.cloneNode(true);
+      return node;
     }
 
     let docEl = document.createElement('template');
