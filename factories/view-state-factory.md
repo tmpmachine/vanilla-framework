@@ -1,22 +1,18 @@
 Version: 3
 
 ## Setup
-Hide any hidden screen by wrapping inside template.
+Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and performance to avoid rendering. The hidden screen container must containt `data-hidden` attribute.
 ```html
 <!-- written in divless HTML format -->
 <!-- https://github.com/tmpmachine/divless-html -->
 <body>
-
-<style>
-  .is-hidden{display:none}
-</style>
 
 [ data-view-name="main"
   page 1
   [btn onclick="viewStateMain.Update({name:'about'})" 'about']
 ]
 <template data-view-name="about">
-[ data-view-name="about" data-hidden
+[ data-hidden
   page 2
   [btn onclick="viewStateMain.Update({name:'main'})" 'main']
 ]
