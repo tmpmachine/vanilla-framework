@@ -1,6 +1,7 @@
 Version: 3
 
-Setup:
+## Setup
+Hide any hidden screen by wrapping inside template.
 ```html
 <!-- written in divless HTML format -->
 <!-- https://github.com/tmpmachine/divless-html -->
@@ -10,14 +11,16 @@ Setup:
   .is-hidden{display:none}
 </style>
 
-[ data-view-name="main" .is-hidden
+[ data-view-name="main"
   page 1
   [btn onclick="viewStateMain.Update({name:'about'})" 'about']
 ]
-[ data-view-name="about" .is-hidden
+<template data-view-name="about">
+[ data-view-name="about" data-hidden
   page 2
   [btn onclick="viewStateMain.Update({name:'main'})" 'main']
 ]
+</template>
 
 <script src="/libs/dom-states.js"></script>
 
