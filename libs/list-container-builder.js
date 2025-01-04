@@ -7,7 +7,7 @@ function ListContainerBuilder(opt) {
    
   let SELF = {
     Refresh,
-    RefreshSingle,
+    RefreshItem,
     AppendItems,
     SetContainer,
     GetContainer,
@@ -48,7 +48,7 @@ function ListContainerBuilder(opt) {
     containerEl?.append(docFrag);
   }
   
-  function RefreshSingle(item) {
+  function RefreshItem(item) {
     let itemEl = opt.lookup?.(containerEl, item);
     if (!itemEl) return;
     
