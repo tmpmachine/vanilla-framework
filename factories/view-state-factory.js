@@ -54,6 +54,7 @@ function ViewStateFactory(opt = {
 
                     let hidePromise = new Promise(async resolve => {
                         await new Promise(resolve => window.setTimeout(resolve, transitionTimeout));
+                        delete node.dataset.viewName;
                         opt.onHide?.(node);
                         screenAnchorNode.content.append(node);
                         resolve();
@@ -69,6 +70,7 @@ function ViewStateFactory(opt = {
                 let node = targetScreen.content.firstElementChild;
                 
                 if (node) {
+                    node.dataset.viewName = targetScreen.dataset.viewName;
                     targetScreen.parentNode.append(node); // highest element order
 
                     // delay 1ms to allow browser to render initial element state before starting transition
