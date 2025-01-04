@@ -50,7 +50,7 @@ function ViewStateFactory(opt = {
                         node.insertAdjacentElement('beforebegin', screenAnchorNode);
                     }
 
-                    node.classList.add('transition-out');
+                    node.dataset.hidden = true;
 
                     let hidePromise = new Promise(async resolve => {
                         await new Promise(resolve => window.setTimeout(resolve, transitionTimeout));
@@ -73,7 +73,7 @@ function ViewStateFactory(opt = {
 
                     // delay 1ms to allow browser to render initial element state before starting transition
                     window.setTimeout(() => {
-                        node.classList.remove('transition-out');
+                        delete node.dataset.hidden;
                     }, 1);
                 }
 
