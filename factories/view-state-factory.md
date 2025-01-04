@@ -9,6 +9,8 @@ Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and
 <html>
 <head>
 
+  <link href="skin.css" rel="stylesheet"/>
+
 </head>
 <body>
   
@@ -36,6 +38,7 @@ Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and
 ```
 
 # Basic Styling & Transition
+`skin.css`
 ```css
 html,body{height:100%}
 body{margin:0;display:flex;flex-direction:column;overflow:hidden}
@@ -63,6 +66,7 @@ body{margin:0;display:flex;flex-direction:column;overflow:hidden}
 ```
 
 # Initialize & Changing Views
+`index.js`
 ```js
 let viewStateRoot = ViewStateFactory({
   selector: 'body > [data-view-name]',
