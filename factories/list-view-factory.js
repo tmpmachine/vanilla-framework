@@ -22,8 +22,8 @@ function ListViewFactory(opt = {
 
     let SELF = {
         Refresh,
-        RefreshItem,
-        GetOptions: () => JSON.parse(JSON.stringify(local.options)),
+        RefreshItem: (item) => listContainer.RefreshItem(item),
+        GetOptions: () => local.options,
         Search,
         SetOptions,
         SetContainer: (node) => {
@@ -134,12 +134,7 @@ function ListViewFactory(opt = {
 
     // # build
     function buildListItem(node, item) {
-        // let slots = DOMSlots(node);
         return opt?.builderCallback?.(node, item);
-    }
-
-    function RefreshItem(item) {
-        listContainer.RefreshSingle(item);
     }
 
     // # init
