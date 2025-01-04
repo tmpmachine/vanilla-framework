@@ -1,34 +1,42 @@
 Version: 4
 
+Notes: HTML snippets are written in divless HTML format. Visit https://github.com/tmpmachine/divless-html.
+
 ## Setup
 Hide any hidden screen by wrapping inside `<template>`. This is good for SEO and performance to avoid rendering. The hidden screen container must containt `data-hidden` attribute.
 ```html
-<!-- written in divless HTML format -->
-<!-- https://github.com/tmpmachine/divless-html -->
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
 <body>
-
-[ data-view-name="main"
-  [ .inner
-    page 1
-    [btn onclick="viewStateRoot.Update({name:'about'})" 'about']
+  
+  [ data-view-name="main"
+    [ .inner
+      page 1
+      [btn onclick="viewStateRoot.Update({name:'about'})" 'about']
+    ]
   ]
-]
-<template data-view-name="about">
-[ data-hidden
-  [ .inner
-    page 2
-    [btn onclick="viewStateRoot.Update({name:'main'})" 'main']
+  <template data-view-name="about">
+  [ data-hidden
+    [ .inner
+      page 2
+      [btn onclick="viewStateRoot.Update({name:'main'})" 'main']
+    ]
   ]
-]
-</template>
-
-<script src="/libs/dom-states.js"></script>
-
+  </template>
+  
+  <script src="./libs/dom-states.js"></script>
+  <script src="./libs/view-state-factory.js"></script>
+  <script src="./index.js"></script>
+  
 </body>
+</html>
 ```
 
 # Basic Styling & Transition
-```
+```css
 html,body{height:100%}
 body{margin:0;display:flex;flex-direction:column;overflow:hidden}
 
@@ -54,7 +62,7 @@ body{margin:0;display:flex;flex-direction:column;overflow:hidden}
 }
 ```
 
-# Initialize & Updating the screen
+# Initialize & Changing Views
 ```js
 let viewStateRoot = ViewStateFactory({
   selector: 'body > [data-view-name]',
