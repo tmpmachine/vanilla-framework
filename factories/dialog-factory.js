@@ -1,4 +1,4 @@
-/* v4.1 */
+/* v4.2 */
 function DialogFactory(
 	opt = {
 		onShow: null,
@@ -19,9 +19,9 @@ function DialogFactory(
 	let local = {
 		options: opt.options ?? {},
 		dialogEl: null,
-		dialogShowObj: null,
-		dialogOptEdit: {
-			defaultValue: null,
+		dialogData: null,
+		dialogOptions: {
+		  src: opt.src,
 			template: opt.template,
 			templateSelector: opt.templateSelector,
 			onClose: (dialogEl) => readDialogEdit(dialogEl),
@@ -32,6 +32,10 @@ function DialogFactory(
 	};
 
 	// # function
+
+  function Configure(opt) {
+    
+  }
 
 	function Close() {
 		local.dialogEl?.close();
@@ -65,7 +69,7 @@ function DialogFactory(
 		opt.onBeforeClose?.(dialogEl);
 
 		local.dialogEl = null;
-		local.dialogShowObj = null;
+		local.dialogData = null;
 
 		return {
 			...formData,
@@ -74,26 +78,24 @@ function DialogFactory(
 	}
 
 	function Refresh() {
-		opt.onShow?.(local.dialogShowObj);
+		opt.onShow?.(local.dialogData);
 	}
 
 	// # show, # build
 	async function Show_(formValuesObject = {}, extraParams, callback) {
 		let formData = await windog.showDialogAsync(
-			local.dialogOptEdit,
+			local.dialogOptions,
 			function onshown(dialogEl) {
 				let form = dialogEl.querySelector("form");
-				let slots = utils?.DOMSlots?.(dialogEl);
-				let dialogShowObj = {
+				let dialogData = {
 					dialogEl,
 					form,
-					slots,
 					extraParams,
 					formValuesObject,
 				};
 
 				local.dialogEl = dialogEl;
-				local.dialogShowObj = dialogShowObj;
+				local.dialogData = dialogData;
 
 				if (local.eventsMap) {
 					local.eventsMap.onclick = {
@@ -101,11 +103,15 @@ function DialogFactory(
 						"close-dialog": () => dialogEl.close(),
 					};
 				}
-
-				DOMEvents.Listen(local.eventsMap, dialogEl);
-				utils?.FillFormWithData?.(form, formValuesObject);
-				opt.onShow?.(dialogShowObj);
-				callback?.(dialogShowObj);
+        
+        if (typeof(DOMEvents) != 'undefined') {
+			  	DOMEvents?.Listen(local.eventsMap, dialogEl);
+        }
+        if (typeof(utils) != 'undefined') {
+				  utils?.FillFormWithData?.(form, formValuesObject);
+        }
+				opt.onShow?.(dialogData);
+				callback?.(dialogData);
 			}
 		);
 
