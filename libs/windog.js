@@ -1,4 +1,4 @@
-/* v2.1 */
+/* v2.2 */
 let windog = (function () {
 
     let $ = document.querySelector.bind(document);
@@ -8,6 +8,7 @@ let windog = (function () {
         confirm,
         prompt,
         showDialogAsync,
+        preloadTemplate,
     };
 
     // # local
@@ -130,25 +131,50 @@ let windog = (function () {
                 controller,
             };
 
-            dialogEl._windogData = dialogData;
-
-            attachBackdropListener(allowOutsideClick, dialogEl);
-            dialogEl.addEventListener('close', onClose);
             document.body.append(el);
             dialogEl.showModal();
 
             // # lazy load
-            if (dialogOptions.src) {
-                await lazyLoad(dialogEl, controller, mixedOptions);
+            if (dialogEl.dataset.empty && dialogOptions.src) {
+                dialogEl.querySelector('.backdrop')?.addEventListener('click', (evt) => {
+                    dialogEl.close();
+                });
+                dialogEl.addEventListener('close', () => {
+                    dialogData.controller.abort('Closed by user');
+                });
+
+                let start = Date.now();
+                let templateEl = await lazyLoad(controller, mixedOptions);
+
+                if (templateEl) {
+                    let loadingDialog = dialogEl;
+                    let loadedDialog = templateEl.querySelector('dialog');
+
+                    document.body.append(templateEl);
+                    loadedDialog.classList.add('transitionless');
+                    
+                    let end = Date.now();
+                    let dx = end - start;
+
+                    await new Promise(resolve => window.setTimeout(resolve, 250 - dx)); // wait loading transition end
+
+                    loadingDialog.remove();
+                    loadedDialog.showModal();
+
+                    dialogEl = loadedDialog;
+                }
             }
 
+            dialogEl._windogData = dialogData;
+            
+            dialogEl.addEventListener('close', onClose);
+            attachBackdropListener(allowOutsideClick, dialogEl);
             attachKeytrap(dialogEl, dialogData);
-
             onShow?.(dialogEl, extraData, mixedOptions);
         });
     }
 
-    async function lazyLoad(dialogEl, controller, mixedOptions) {
+    async function lazyLoad(controller, mixedOptions) {
 
         let { src } = mixedOptions;
 
@@ -158,64 +184,64 @@ let windog = (function () {
                 await local.lazyLoadPromise[src];
             }
 
-            let isLoaded = loadLazyDialog(dialogEl, mixedOptions);
-            if (isLoaded) {
-                resolve()
+            let templateEl = getLazyTemplate(mixedOptions);
+            if (templateEl) {
+                resolve(templateEl)
                 return;
             }
 
-            local.lazyLoadPromise[src] = new Promise(resolveLazyLoad => {
+            await preloadTemplate(src);
+
+            if (controller.signal.aborted) {
+                return;
+            }
+            
+            // retry get template
+            templateEl = getLazyTemplate(mixedOptions)
+
+            resolve(templateEl);
+        });
+    }
+
+    function preloadTemplate(src) {
+        return new Promise(resolve => {
+            
+            local.lazyLoadPromise[src] = new Promise(async resolveLazyLoad => {
 
                 fetch(src)
-                    .then(r => r.text())
-                    .then(r => {
+                .then(r => r.text())
+                .then(r => {
+                    // append to body
+                    {
+                        let template = document.createElement('template');
+                        template.innerHTML = r;
 
-                        // append to body
-                        {
-                            let template = document.createElement('template');
-                            template.innerHTML = r;
-
-                            let docEl = $('._dialogTemplates') ?? document.createElement('div');
-                            docEl.classList.add('_dialogTemplates');
-                            docEl.append(template.content);
-                            document.body.append(docEl);
-                        }
-
-                        if (controller.signal.aborted) {
-                            return;
-                        }
-
-                        loadLazyDialog(dialogEl, mixedOptions)
-
-                        resolve();
-
-                    }).catch(err => {
-                        console.error(err);
-                    }).finally(() => {
-                        resolveLazyLoad();
-                        delete local.lazyLoadPromise[dialogOptions.src];
-                    });
+                        let docEl = $('._dialogTemplates') ?? document.createElement('div');
+                        docEl.classList.add('_dialogTemplates');
+                        docEl.append(template.content);
+                        document.body.append(docEl);
+                    }
+                }).catch(err => {
+                    console.error(err);
+                }).finally(() => {
+                    resolve()
+                    resolveLazyLoad();
+                    delete local.lazyLoadPromise[dialogOptions.src];
+                });
 
             });
 
         });
     }
 
-    function loadLazyDialog(dialogEl, mixedOptions) {
-        let { templateSelector, template, allowOutsideClick } = mixedOptions;
+    function getLazyTemplate(mixedOptions) {
+        let { templateSelector, template} = mixedOptions;
         let el = getTemplateEl(templateSelector, template);
-        let elDialog = el.querySelector('dialog');
+        let dialogEl = el.querySelector('dialog');
 
-        if (elDialog.dataset.empty) return false;
+        if (dialogEl.dataset.empty) return null;
 
-        let classes = elDialog.getAttribute('class');
-
-        dialogEl.setAttribute('class', classes);
-        dialogEl.innerHTML = elDialog.innerHTML;
-
-        attachBackdropListener(allowOutsideClick, dialogEl);
-
-        return true;
+        return el;
     }
 
     function attachBackdropListener(allowOutsideClick, dialogEl) {
@@ -263,10 +289,8 @@ let windog = (function () {
         let dialogData = evt.target._windogData;
         let dialogItem = dialogData.dialogItem;
         let dialogEl = evt.target;
-
-        dialogData.controller.abort('Closed by user');
-
         let dialogResult = await dialogItem.onClose?.(dialogEl);
+
         dialogItem.resolver.resolve(dialogResult);
 
         // wait close animation
