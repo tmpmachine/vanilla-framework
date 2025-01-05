@@ -38,112 +38,7 @@ let dialogObjectives = DialogFactory({
 });
 ```
 
-Basic styling with transition and to allow backdrop click:
-
-`skin.css`
-```css
-/* # windog */
-.wg-windog {
-  & {
-    --sec: 250ms;
-  }
-  
-  & {
-    transition: display var(--sec) allow-discrete, overlay var(--sec) allow-discrete, opacity var(--sec);
-    padding: 0;
-    background: transparent;
-    border: 0;
-    overflow: hidden;
-    height: 100%;
-    width: 100%;
-  }
-  &:not(.transitionless)::backdrop {
-    transition: opacity var(--sec);
-    opacity: 0;
-  }
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-  }
-  .inner {
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-    width: 100%;
-  }
-  .wrapper {
-   &{
-    transition: opacity var(--sec), transform var(--sec);
-    opacity: 0;
-    transform: scale(0.95);
-    background: white;
-    min-width: 360px;
-    overflow: auto;
-    max-height: 100%;
-    max-width: 100%;
-    margin: auto;
-    position: relative;
-    border-radius: 0.4rem;
-  }
-    &:not([class*="skin-"]) {
-      border: 3px solid;
-      padding: 1rem;
-    }
-    &.skin-1{
-      &{
-        border-radius: 0.7rem;
-        padding: 1rem 0;
-      }
-      >section{
-        padding: 0 1rem;
-      }
-    }
-    &.varian-h100 {
-      height: 100%;
-    }
-    &.varian-flex{
-      &{
-        display: flex;
-        flex-direction: column;
-      }
-      .body{
-        flex: 1;
-        overflow: auto;
-      }
-    }
-  }
-  &[open] .wrapper {
-    & {
-      transform: scale(1);
-      opacity: 1;
-    }
-    @starting-style {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-  }
-  &[open] {
-    &::backdrop {
-      opacity: 1;
-    }
-    @starting-style {
-      &::backdrop{
-        opacity: 0;
-      }
-    }
-  }
-  .backdrop {
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-  }
-  button:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
-  }
-}
-```
+Basic styling with transition and to allow backdrop click, see [windog.css](https://github.com/tmpmachine/vanilla-framework/blob/main/css/skin/windog.css)
 
 ### Lazy Load
 
@@ -152,7 +47,7 @@ Add `src` to the dialogs bundle HTML file.
 `dialogs.js`
 ```js
 let dialogObjectives = DialogFactory({
-    src: 'dialog.html',
+    src: 'dialogs.html',
     /* ... */
 });
 ```
@@ -181,7 +76,7 @@ The `._dialogTemplates` container is optional. It is used to append dialog eleme
 
 `index.html`
 ```html
-<div class="_dialogTemplates">
+<div class="_dialogTemplates" hidden>
   <template class="_dialogLoading">
     [dialog .wg-windog data-empty="true"
       [ .backdrop data-backdrop
@@ -192,36 +87,6 @@ The `._dialogTemplates` container is optional. It is used to append dialog eleme
     ]  
   </template>
 </div>
-```
-
-`skin.css`
-```css
-.wg-loading {
-  float: right;
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 4px;
-  margin: 8px;
-}
-.wg-loading svg {
-  animation: rotate 3s linear infinite;
-}
-.wg-loading::after{
-  content: 'Loading';
-  color: white;
-  font-size: 0.6rem;
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
 ```
 
 
