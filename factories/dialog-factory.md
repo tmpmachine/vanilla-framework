@@ -57,10 +57,12 @@ Basic styling with transition and to allow backdrop click:
     height: 100%;
     width: 100%;
   }
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+  &:not(.transitionless)::backdrop {
     transition: opacity var(--sec);
     opacity: 0;
+  }
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.4);
   }
   .inner {
     height: 100%;
@@ -153,6 +155,26 @@ let dialogObjectives = DialogFactory({
     src: 'dialog.html',
     /* ... */
 });
+```
+
+External templates are loaded when open. To preload them, somewhere in your app:
+
+Preloading templates:
+```
+// preload dialogs
+windog.preloadTemplate('dialogs.html');
+```
+
+Notes: loading dialog will dissapear directly after 250ms (no transition out). This is hardcoded to the library and you must adjust to the `--sec` var in the CSS. It is needed for smooth transition of backdrop opacity when lazyloading.
+
+```css
+&:not(.transitionless)::backdrop {
+  transition: opacity var(--sec);
+  opacity: 0;
+}
+&::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
 ```
 
 The `._dialogTemplates` container is optional. It is used to append dialog elements when loaded from external. It will be created if not exists. The `._dialogLoading` dialog also optional. The default will only show backdrop where this one has a nice and simple loading spinner.
