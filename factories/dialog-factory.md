@@ -165,7 +165,7 @@ Preloading templates:
 windog.preloadTemplate('dialogs.html');
 ```
 
-Notes: loading dialog will disappear directly after 250ms (no transition out). This is hardcoded to the library and you must adjust to the `--sec` var in the CSS. It is needed for smooth transition of backdrop opacity when lazyloading.
+Notes: loading dialog will disappear directly after 250ms (no transition out). This is hardcoded to the library and you must adjust to the `--sec` var in the CSS. It is needed for smooth transition of backdrop opacity when lazy loading.
 
 ```css
 &:not(.transitionless)::backdrop {
