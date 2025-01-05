@@ -1,4 +1,4 @@
-/* v2 */
+/* v2.1 */
 let windog = (function() {
 
   let $ = document.querySelector.bind(document);
@@ -9,7 +9,7 @@ let windog = (function() {
     prompt,
     showDialogAsync,
   };
-
+  
   // # options
   
   let dialogOptions = {
@@ -73,10 +73,12 @@ let windog = (function() {
     let slots = DOMSlots(dialogEl);
     
     slots.message?.replaceChildren(message);
-    if (slots.input) slots.input.value = defaultValue; 
     slots.confirmButtonText?.replaceChildren(confirmButtonText); 
     slots.cancelButtonText?.replaceChildren(cancelButtonText);
     
+    if (slots.input) {
+      slots.input.value = defaultValue;
+    }
     if (!showCancelButton) {
       slots.cancelButtonText?.remove();
     }
@@ -114,37 +116,90 @@ let windog = (function() {
         },
       };
       let mixedOptions = Object.assign(defaultOptions, dialogOptions, extraData, persistentOptions);
+      let controller = new AbortController();
       let {allowOutsideClick, template, templateSelector} = mixedOptions;
       let el = getTemplateEl(templateSelector, template);
       let dialogEl = el.querySelector('dialog');
       let dialogData = {
         dialogItem: mixedOptions,
+        controller,
       };
-      
-      if (allowOutsideClick) {
-        dialogEl.querySelector('.backdrop')?.addEventListener('click', (evt) => {
-          onCancel(dialogEl);
-        });
-      }
-      dialogEl.addEventListener('close', onClose);
-      attachKeytrap(dialogEl, dialogData);
       
       dialogEl._windogData = dialogData;
       
+      attachBackdropListener(allowOutsideClick, dialogEl);
+      dialogEl.addEventListener('close', onClose);
       document.body.append(el);
       dialogEl.showModal();
+      
+      // # load
+      await new Promise(async (resolve, reject) => {
+        if (!dialogEl.dataset.empty) {
+          resolve();
+          return;
+        }
+        
+        if (!dialogOptions.src) {
+          console.log(1)
+        }
+        
+        fetch(dialogOptions.src)
+        .then(r => r.text())
+        .then(r => {
+
+          if (controller.signal.aborted) {
+            return;
+          }
+          
+          let template = document.createElement('template');
+          template.innerHTML = r;
+          
+          let docEl = $('._dialogTemplates') ?? document.createElement('div');
+          docEl.classList.add('_dialogTemplates');
+          docEl.append(template.content);
+          document.body.append(docEl);
+                      
+          let el = getTemplateEl(templateSelector, template);
+          let elDialog = el.querySelector('dialog');
+          let classes = elDialog.getAttribute('class');
+          
+          dialogEl.setAttribute('class', classes);
+          dialogEl.innerHTML = elDialog.innerHTML;
+          
+          attachBackdropListener(allowOutsideClick, dialogEl);
+          
+          resolve();
+        }).catch(err => {
+          console.error(err);
+        });
+      });
+      
+      attachKeytrap(dialogEl, dialogData);
 
       onShow?.(dialogEl, extraData, mixedOptions);
     });
   }
+  
+  function attachBackdropListener(allowOutsideClick, dialogEl) {
+    if (!allowOutsideClick) return;
+    
+    dialogEl.querySelector('.backdrop')?.addEventListener('click', (evt) => {
+      onCancel(dialogEl);
+    });
+  }
 
   function getTemplateEl(templateSelector, template) {
-    if (templateSelector) {
-      return $(templateSelector).content.cloneNode(true);
+    let node = $(templateSelector);
+    if (node) {
+      return node.content.cloneNode(true);
     }
 
     let docEl = document.createElement('template');
-    docEl.innerHTML = template;
+    let blankDialog = $('._dialogLoading');
+    let blankTemplate = blankDialog ? $('._dialogLoading').innerHTML : '<dialog class="wg-windog" data-empty="true"><div class="backdrop"></div><dialog>';
+    
+    docEl.innerHTML = template ?? blankTemplate;
+    
     return docEl.content.cloneNode(true);
   }
   
@@ -167,8 +222,11 @@ let windog = (function() {
   
   // # close
   async function onClose(evt) {
-    let dialogItem = evt.target._windogData.dialogItem;
+    let dialogData = evt.target._windogData;
+    let dialogItem = dialogData.dialogItem;
     let dialogEl = evt.target;
+    
+    dialogData.controller.abort('Closed by user');
     
     let dialogResult = await dialogItem.onClose?.(dialogEl);
     dialogItem.resolver.resolve(dialogResult);
