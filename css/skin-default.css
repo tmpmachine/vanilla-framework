@@ -1,1 +1,62 @@
+/* # xp */
+.xp-dialog{--xp: 1.8rem;}
+.xp-1{--xp:1rem}
+.xp {
+  padding-left: var(--xp);
+  padding-right: var(--xp);
+}
+.xp .xp:not(.xr) {
+  --xp-2: calc(var(--xp) * 0.6);
+  padding-left: var(--xp-2);
+  padding-right: var(--xp-2);
+}
+.xp .xp:not(.xr) .xp:not(.xr) {
+  --xp-3: calc(var(--xp-2) * 0.4);
+  padding-left: var(--xp-3);
+  padding-right: var(--xp-3);
+}
 
+/* # yp */
+.yp-dialog{--yp: 1.6rem;}
+.yp-2{--yp:2rem}
+.yp-1{--yp: 0.9rem;}
+.yp {
+  padding-top: var(--yp);
+  padding-bottom: var(--yp);
+}
+.yp .yp:not(.yr) {
+  --yp-2: calc(var(--yp) * 0.6);
+  padding-top: var(--yp-2);
+  padding-bottom: var(--yp-2);
+}
+.yp .yp:not(.yr) .yp:not(.yr) {
+  --yp-3: calc(var(--yp-2) * 0.4);
+  padding-top: var(--yp-3);
+  padding-bottom: var(--yp-3);
+}
+
+/* # fx, # layout */
+.fx-default{--fx:1.9rem}
+.fx-1{--fx:1rem}
+.fx-75{--fx:0.75rem}.fx-50{--fx:0.5rem}
+.fx {
+  gap: var(--fx);
+  display: flex;
+  flex-direction: column;
+}
+.fx .fx:not(.fr) {
+  --fx-2: calc(var(--fx) * 0.6);
+  gap: var(--fx-2);
+}
+.fx .fx:not(.fr) .fx:not(.fr) {
+  --fx-3: calc(var(--fx-2) * 0.4);
+  gap: var(--fx-3);
+}
+.fx .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) {
+  --fx-4: calc(var(--fx-3) * 0.55);
+  gap: var(--fx-4);
+}
+.fx .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) .fx:not(.fr) {
+  --fx-5: calc(var(--fx-4) * 0.55);
+  gap: var(--fx-5);
+}
