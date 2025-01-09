@@ -1,7 +1,7 @@
 Create resource map file.
 
 resource-map.js
-```
+```js
 export const batches = {
   batch1: [
     'js/libs/dom-slots.js',
@@ -29,6 +29,18 @@ export const manifestCache = {
   ],
   // ...
 };
+```
+
+Generate `manifest-cache.json`.
+
+generate-manifest-cache.js
+```js
+import { manifestCache } from './src/resource-map.js';
+import fs from 'fs';
+
+const jsonOutput = JSON.stringify(manifestCache, null, 2);
+fs.writeFileSync('./src/manifest-cache.json', jsonOutput, 'utf-8');
+console.log('Manifest JSON generated successfully.');
 ```
 
 ```html
