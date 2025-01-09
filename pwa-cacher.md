@@ -1,3 +1,36 @@
+Create resource map file.
+
+resource-map.js
+```
+export const batches = {
+  batch1: [
+    'js/libs/dom-slots.js',
+    'js/libs/dom-states.js',
+    // ...
+  ],
+  batch2: [
+    // ...
+  ],
+};
+
+export const manifestCache = {
+  "version": 2,
+  "resourceMap": {
+    ...batches,
+  },
+  "root": [
+    "./",
+    "index.js",
+    "index.html",
+    "resource-map.js",
+    "script-loader.js",
+    "manifest.json",
+    "pwa-cacher.js"
+  ],
+  // ...
+};
+```
+
 ```html
 <script src="pwa-cacher.js"></script>
 <section>
