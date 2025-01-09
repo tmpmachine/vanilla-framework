@@ -1,4 +1,4 @@
-/* v1 */
+/* v1.1 */
 let pwaCacher = (function() {
   
   let $ = document.querySelector.bind(document);
@@ -44,12 +44,19 @@ let pwaCacher = (function() {
   }
   
   function extractUrlsFromJson(json) {
-    let urls = [];
-    for (let key in json) {
-      if (Array.isArray(json[key])) {
-        urls = urls.concat(json[key]);
+    const urls = [];
+
+    (function recurse(obj) {
+      for (const key in obj) {
+        const value = obj[key];
+        if (Array.isArray(value)) {
+          urls.push(...value);
+        } else if (value && typeof value === "object") {
+          recurse(value); // Recurse into nested objects
+        }
       }
-    }
+    })(json);
+
     return urls;
   }
     
