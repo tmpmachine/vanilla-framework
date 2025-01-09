@@ -1,6 +1,6 @@
 Create resource map file.
 
-resource-map.js
+`resource-map.js`
 ```js
 export const batches = {
   batch1: [
@@ -33,7 +33,7 @@ export const manifestCache = {
 
 Generate `manifest-cache.json`.
 
-generate-manifest-cache.js
+`generate-manifest-cache.js`
 ```js
 import { manifestCache } from './src/resource-map.js';
 import fs from 'fs';
@@ -42,6 +42,8 @@ const jsonOutput = JSON.stringify(manifestCache, null, 2);
 fs.writeFileSync('./src/manifest-cache.json', jsonOutput, 'utf-8');
 console.log('Manifest JSON generated successfully.');
 ```
+
+Setup a feature to control application cache. Make sure this is loaded independently so that user can remove the cache even when something went wrong.
 
 ```html
 <script src="pwa-cacher.js"></script>
@@ -66,6 +68,8 @@ console.log('Manifest JSON generated successfully.');
   [pre data-slot="urls" .hide-empty]
 </section>
 ```
+
+Initialize the PWA feature states.
 
 ```js
 pwaCacher.Init();
