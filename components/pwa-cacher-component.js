@@ -1,10 +1,10 @@
-/* v1.1 */
-let pwaCacher = (function() {
+/* v2 */
+let compoPWACacher = (function() {
   
   let $ = document.querySelector.bind(document);
   let buildVersion = '1';
   let cacheName = `appcache-dailyheroes-NTY3OTYyOTc-build${buildVersion}`;
-  let manifestCachePath = './manifest-cache.json';
+  let manifestCachePath = './json/manifest-cache.json';
   
   let SELF = {
     Update,

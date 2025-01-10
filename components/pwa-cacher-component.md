@@ -1,6 +1,6 @@
 ## Generating Manifest Cache
 
-Create resource map file.
+Create resource map file. See manifestCache.root, make sure to cache them all. Apart from application components, this is the minimal files you need to cache to be able to clear app cache when offline.
 
 `resource-map.js`
 ```js
@@ -27,7 +27,7 @@ export const manifestCache = {
     "resource-map.js",
     "script-loader.js",
     "manifest.json",
-    "pwa-cacher.js"
+    "pwa-cacher-component.js"
   ],
   // ...
 };
@@ -50,21 +50,21 @@ console.log('Manifest JSON generated successfully.');
 Setup a feature to control application cache. Make sure this is loaded independently so that user can remove the cache even when something went wrong.
 
 ```html
-<script src="pwa-cacher.js"></script>
+<script src="pwa-cacher-component.js"></script>
 <section>
   [h2 'Offline Access']
   
   <!-- PWA cache manager -->
   [ .flex .gap-50
-    <button data-slot="cacheBtn" onclick="pwaCacher.Update()">Enable</button>
-    <button data-slot="clearBtn" onclick="pwaCacher.Clear()">Disable</button>
+    <button data-slot="cacheBtn" onclick="compoPWACacher.Update()">Enable</button>
+    <button data-slot="clearBtn" onclick="compoPWACacher.Clear()">Disable</button>
   ]
   [
-    <button data-slot="updateBtn" onclick="pwaCacher.Update()">Cache latest version</button>
+    <button data-slot="updateBtn" onclick="compoPWACacher.Update()">Cache latest version</button>
   ]
   [
     <label>
-      <input name="replaceWidgetSettings" type="checkbox" oninput="pwaCacher.SetAutoCache(this.checked)" data-slot="cacheOpt"/>
+      <input name="replaceWidgetSettings" type="checkbox" oninput="compoPWACacher.SetAutoCache(this.checked)" data-slot="cacheOpt"/>
       Automatically cache latest version.
     </label>
   ]
@@ -76,5 +76,5 @@ Setup a feature to control application cache. Make sure this is loaded independe
 Initialize the PWA feature states.
 
 ```js
-pwaCacher.Init();
+compoPWACacher.Init();
 ```
