@@ -1,4 +1,4 @@
-/* v2.2 */
+/* v2.3 */
 let windog = (function () {
 
     let $ = document.querySelector.bind(document);
@@ -75,7 +75,7 @@ let windog = (function () {
 
     function onShowDefault(dialogEl, extraData, options) {
         let { message, defaultValue } = extraData;
-        let { confirmButtonText, cancelButtonText, showCancelButton } = options;
+        let { confirmButtonText, cancelButtonText, showCancelButton, inputType } = options;
         let slots = DOMSlots(dialogEl);
 
         slots.message?.replaceChildren(message);
@@ -83,7 +83,12 @@ let windog = (function () {
         slots.cancelButtonText?.replaceChildren(cancelButtonText);
 
         if (slots.input) {
-            slots.input.value = defaultValue;
+            slots.input.type = inputType ?? 'text';
+
+            // browser fix: delay to allow input focus after type change
+            window.setTimeout(() => {
+                slots.input.value = defaultValue;
+            }, 1);
         }
         if (!showCancelButton) {
             slots.cancelButtonText?.remove();
@@ -316,13 +321,13 @@ let windog = (function () {
 
             let { dialogItem } = dialogEl._windogData;
             if (dialogItem.allowEscapeKey) {
+                evt.preventDefault()
                 let isShouldClose = await onBeforeClose(dialogEl, dialogItem)
                 if (isShouldClose) {
                     dialogEl.close();
                 }
             }
 
-            evt.preventDefault(); // disable default close dialog behaviour
             return;
         }
 
