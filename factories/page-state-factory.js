@@ -1,4 +1,4 @@
-/* v1 */
+/* v1.1 */
 function PageStateFactory(stateHandlerMap={}) {
 
     // # self
@@ -29,8 +29,12 @@ function PageStateFactory(stateHandlerMap={}) {
             let handler = local.stateHandlers[key];
             if (!handler.isDirty) continue;
             
-            handler.callback();
-            handler.isDirty = false;
+            try {
+                handler.callback();
+                handler.isDirty = false;
+            } catch (error) {
+                console.error(error);            
+            }
         }
     }
 
