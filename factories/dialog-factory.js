@@ -1,4 +1,4 @@
-/* v4.3 */
+/* v4.4 */
 function DialogFactory(
     opt = {
         dialogDataModifier: null,
@@ -69,6 +69,7 @@ function DialogFactory(
 
         opt.onBeforeClose?.(dialogEl);
 
+        local.options = {};
         local.dialogEl = null;
         local.dialogData = null;
 
@@ -80,6 +81,13 @@ function DialogFactory(
 
     function Refresh() {
         opt.onShow?.(local.dialogData);
+    }
+
+    async function closeDialog() {
+        let isClose = await validateDialogEdit(local.dialogEl);
+        if  (!isClose) return;
+        
+        local.dialogEl.close()
     }
 
     // # show, # build
@@ -101,7 +109,7 @@ function DialogFactory(
                 if (local.eventsMap) {
                     local.eventsMap.onclick = {
                         ...local.eventsMap.onclick,
-                        "close-dialog": () => dialogEl.close(),
+                        "close-dialog": closeDialog,
                     };
                 }
 
