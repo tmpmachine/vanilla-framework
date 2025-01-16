@@ -1,23 +1,24 @@
-/* v4 */
+/* v5.1 */
 function ViewStateFactory(opt = {
     selector: null,
     onHide: null,
-    onEnter: null,
+    onBeforeShow: null,
+    onShow: null,
 }) {
 
     let isAnimationStart = false;
     let selector = opt.selector;
     let defaultTransitionTimeout = opt.transitionTimeout ?? 1;
 
-    let screens = DOMStates({
+    let views = DOMStates({
         selector,
     })
 
-    let activeScreen = DOMStates({
+    let activeView = DOMStates({
         selector: `${selector.trim()}:not(template)`,
     })
 
-    let stateManager = screens.clone({
+    let stateManager = views.clone({
         onUpdate: async (nodes, { name, transitionTimeout }) => {
             
             if (isAnimationStart) return;
@@ -26,11 +27,11 @@ function ViewStateFactory(opt = {
                 transitionTimeout = defaultTransitionTimeout;
             }
             
-            let targetScreen = nodes.find(node => node.dataset.viewName == name) ?? nodes[0];
-            let targetScreenName = targetScreen.dataset.viewName;
+            let targetNode = nodes.find(node => node.dataset.viewName == name) ?? nodes.find(node => node.tagName != 'TEMPLATE') ?? nodes[0];
+            let targetViewName = targetNode.dataset.viewName;
 
-            if (targetScreen.tagName == 'TEMPLATE') {
-                let isAlreadyActive = nodes.some(node => node.dataset.viewName == targetScreenName && node.tagName != 'TEMPLATE');
+            if (targetNode.tagName == 'TEMPLATE') {
+                let isAlreadyActive = nodes.some(node => node.dataset.viewName == targetViewName && node.tagName != 'TEMPLATE');
                 if (isAlreadyActive) return;
             }
 
@@ -39,15 +40,15 @@ function ViewStateFactory(opt = {
             nodes
                 .filter(node => node.tagName != 'TEMPLATE')
                 .forEach(async node => {
-                    let screenName = node.dataset.viewName;
-                    if (screenName == targetScreenName) return; // active screen
+                    let viewName = node.dataset.viewName;
+                    if (viewName == targetViewName) return; // active view
 
-                    let screenAnchorNode = nodes.find(t => t.tagName == 'TEMPLATE' && t.dataset.viewName == screenName);
+                    let anchorNode = nodes.find(t => t.tagName == 'TEMPLATE' && t.dataset.viewName == viewName);
 
-                    if (!screenAnchorNode) {
-                        screenAnchorNode = document.createElement('template');
-                        screenAnchorNode.dataset.viewName = screenName;
-                        node.insertAdjacentElement('beforebegin', screenAnchorNode);
+                    if (!anchorNode) {
+                        anchorNode = document.createElement('template');
+                        anchorNode.dataset.viewName = viewName;
+                        node.insertAdjacentElement('beforebegin', anchorNode);
                     }
 
                     node.dataset.hidden = true;
@@ -55,8 +56,11 @@ function ViewStateFactory(opt = {
                     let hidePromise = new Promise(async resolve => {
                         await new Promise(resolve => window.setTimeout(resolve, transitionTimeout));
                         delete node.dataset.viewName;
-                        opt.onHide?.(node);
-                        screenAnchorNode.content.append(node);
+                        opt.onHide?.({
+                            node,
+                            viewName: viewName,
+                        });
+                        anchorNode.content.append(node);
                         resolve();
                     });
                     promises.push(hidePromise);
@@ -66,38 +70,52 @@ function ViewStateFactory(opt = {
 
             isAnimationStart = true;
 
-            if (targetScreen.tagName == 'TEMPLATE') {
-                let node = targetScreen.content.firstElementChild;
-                
-                if (node) {
-                    node.dataset.viewName = targetScreen.dataset.viewName;
-                    targetScreen.parentNode.append(node); // highest element order
-
-                    // delay 1ms to allow browser to render initial element state before starting transition
-                    window.setTimeout(() => {
-                        delete node.dataset.hidden;
-                    }, 1);
-                }
-
-                await new Promise(resolve => setTimeout(() => {
-                    resolve();
-                }, transitionTimeout));
-            }
+            let node = targetNode.content?.firstElementChild ?? targetNode;
             
+            if (node) {
+                node.dataset.viewName = targetViewName;
+
+                let isFirstRender = !node.dataset.rendered
+
+                opt.onBeforeShow?.({ 
+                    node, 
+                    isFirstRender,
+                    viewName: targetViewName, 
+                });
+
+                targetNode.parentNode.append(node); // highest element order
+                
+                opt.onShow?.({ 
+                    node, 
+                    isFirstRender,
+                    viewName: targetViewName, 
+                });
+
+                node.dataset.rendered = true;
+
+                // delay 1ms to allow browser to render initial element state before starting transition
+                window.setTimeout(() => {
+                    delete node.dataset.hidden;
+                }, 1);
+            }
+
+            await new Promise(resolve => setTimeout(() => {
+                resolve();
+            }, transitionTimeout));
+        
             isAnimationStart = false;
         }
     });
 
     // # function
-    function GetScreenNode() {
-        return activeScreen.getElements()[0];
+    function GetActiveNode() {
+        return activeView.getElements()[0];
     }
 
     // # self
     let SELF = {
-        stateManager,
-        GetScreenNode,
-        Update: (opt) => stateManager.update(opt),
+        GetActiveNode,
+        GetViewName: () => activeView.getElements()[0]?.dataset.viewName,
         Update_: async (opt) => await stateManager.updateAsync(opt),
     }
 
