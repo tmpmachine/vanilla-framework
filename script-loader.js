@@ -1,7 +1,7 @@
-/* v1 */
+/* v1.2 */
 export { loadScripts };
 
-function loadScripts(components) {
+function loadScripts(components = TypeComponent``) {
   let loadIndex = -1;
   loadComponents(components, loadIndex);
 }
@@ -36,8 +36,10 @@ function requireExternalFiles(url, type) {
 function loadExternalFiles(URLs, type) {
   return new Promise(resolve => {
     let bundleURL = [];
-    for (let URL of URLs) {
-      bundleURL.push(requireExternalFiles(URL, type));
+    if (URLs) {
+      for (let URL of URLs) {
+        bundleURL.push(requireExternalFiles(URL, type));
+      }
     }
     Promise.all(bundleURL).then(() => {
       resolve();
@@ -47,3 +49,18 @@ function loadExternalFiles(URLs, type) {
     });
   });
 }
+
+
+// #region # types
+
+let NullOverride = () => null;
+
+let TypeComponents = () => [TypeComponent``];
+let TypeComponent = () => ({
+  urls: [],
+  callback: () => {},
+}); 
+TypeComponents = NullOverride;
+TypeComponent = NullOverride;
+
+// #endregion
