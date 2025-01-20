@@ -1,7 +1,7 @@
-/* v1.2 */
+/* v1.3 */
 export { loadScripts };
 
-function loadScripts(components = TypeComponent``) {
+function loadScripts(components = TypeComponents() ?? []) {
   let loadIndex = -1;
   loadComponents(components, loadIndex);
 }
@@ -53,14 +53,13 @@ function loadExternalFiles(URLs, type) {
 
 // #region # types
 
-let NullOverride = () => null;
+/**
+@typedef {Object} TypeComponent
+@property {Array} [urls] 
+@property {Function} [callback] 
+*/
 
-let TypeComponents = () => [TypeComponent``];
-let TypeComponent = () => ({
-  urls: [],
-  callback: () => {},
-}); 
-TypeComponents = NullOverride;
-TypeComponent = NullOverride;
+/** @returns {TypeComponent|null} */ let TypeComponent = () => null  
+/** @returns {TypeComponent[]|null} */ let TypeComponents = () => null  
 
 // #endregion
