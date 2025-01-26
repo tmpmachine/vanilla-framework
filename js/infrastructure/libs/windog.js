@@ -54,7 +54,7 @@ let windog = (function () {
         });
     }
 
-    async function confirm(message = '', userOptions, userOptions = UserOptions() ?? {}) {
+    async function confirm(message = '', userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.confirm,
             ...userOptions
@@ -65,7 +65,7 @@ let windog = (function () {
     }
 
     // # alert
-    async function alert(message = '', userOptions, userOptions = UserOptions() ?? {}) {
+    async function alert(message = '', userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.alert,
             ...userOptions
