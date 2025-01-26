@@ -89,6 +89,11 @@ let windog = (function () {
             // browser fix: delay to allow input focus after type change
             window.setTimeout(() => {
                 slots.input.value = defaultValue;
+
+                // use delay for mobile
+                window.setTimeout(() => {
+                    slots.input.select();
+                }, 10);
             }, 1);
         }
         if (!showCancelButton) {
