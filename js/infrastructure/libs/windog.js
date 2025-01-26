@@ -42,7 +42,7 @@ let windog = (function () {
     // # function
 
     // # prompt
-    /** @returns {Promise<string>} value entered by user */
+    /** @returns {Promise<string?>} A promise. Value entered by user or null if dismissed */
     async function prompt(message = '', defaultValue = '', userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.prompt,
@@ -356,7 +356,7 @@ let windog = (function () {
     @property {Boolean} [showCancelButton]
     @property {string} [inputType] - text, number, etc.
     */
-    /** @returns {TypeUserOptions|null} */ let UserOptions = () => {}  
+    /** @returns {TypeUserOptions?} */ let UserOptions = () => null
 
     // # return
     return SELF;
