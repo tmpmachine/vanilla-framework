@@ -1,4 +1,4 @@
-/* v2.3 */
+/* v2.4 */
 let windog = (function () {
 
     let $ = document.querySelector.bind(document);
@@ -42,7 +42,8 @@ let windog = (function () {
     // # function
 
     // # prompt
-    async function prompt(message = '', defaultValue = '', userOptions) {
+    /** @returns {Promise<string>} value entered by user */
+    async function prompt(message = '', defaultValue = '', userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.prompt,
             ...userOptions
@@ -53,7 +54,7 @@ let windog = (function () {
         });
     }
 
-    async function confirm(message = '', userOptions) {
+    async function confirm(message = '', userOptions, userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.confirm,
             ...userOptions
@@ -64,7 +65,7 @@ let windog = (function () {
     }
 
     // # alert
-    async function alert(message = '', userOptions) {
+    async function alert(message = '', userOptions, userOptions = UserOptions() ?? {}) {
         return await showDialogAsync({
             ...dialogOptions.alert,
             ...userOptions
@@ -346,6 +347,18 @@ let windog = (function () {
         }
     }
 
+    // # types
+
+    /**
+    @typedef {Object} TypeUserOptions
+    @property {string} [confirmButtonText]
+    @property {string} [cancelButtonText]
+    @property {Boolean} [showCancelButton]
+    @property {string} [inputType] - text, number, etc.
+    */
+    /** @returns {TypeUserOptions|null} */ let UserOptions = () => {}  
+
+    // # return
     return SELF;
 
 })();
