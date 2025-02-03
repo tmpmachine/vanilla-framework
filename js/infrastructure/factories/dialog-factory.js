@@ -1,4 +1,4 @@
-/* v4.6 */
+/* v5.0 */
 function DialogFactory(
     opt = {
         dialogDataModifier: null,
@@ -10,7 +10,7 @@ function DialogFactory(
     let SELF = {
         Show_,
         Refresh,
-        Close,
+        Close: () => closeDialog(),
         GetOptions: () => local.options,
         GetDialog: () => local.dialogEl,
         SetOptions,
@@ -25,31 +25,17 @@ function DialogFactory(
             src: opt.src,
             template: opt.template,
             templateSelector: opt.templateSelector,
-            onClose: (dialogEl) => readDialogEdit(dialogEl),
+            onClose: (dialogEl) => onClose(dialogEl),
             onBeforeClose: async (dialogEl) => await validateDialogEdit(dialogEl),
         },
-        // # dom events, # events
-        eventsMap: opt.eventsMap ?? {},
     };
 
     // # function
-
-    function Close() {
-        local.dialogEl?.close();
-    }
 
     function SetOptions(options) {
         for (let key in options) {
             local.options[key] = options[key];
         }
-    }
-
-    function getDialogEditFormData(dialogEl) {
-        let form = dialogEl.querySelector("form");
-        if (!form) return new FormData();
-
-        let formData = new FormData(form);
-        return utils?.FormDataToObject?.(formData);
     }
 
     async function validateDialogEdit(dialogEl) {
@@ -59,10 +45,8 @@ function DialogFactory(
         return true;
     }
 
-    async function readDialogEdit(dialogEl) {
-        let formData = getDialogEditFormData(dialogEl);
+    async function onClose(dialogEl) {
         let returnValue = dialogEl.returnValue;
-
         let returnData = opt.onBeforeClose?.(dialogEl);
 
         local.options = {};
@@ -70,7 +54,7 @@ function DialogFactory(
         local.dialogData = null;
 
         return {
-            ...formData,
+            form: dialogEl.querySelector('form'),
             returnValue,
             returnData,
         };
@@ -84,7 +68,7 @@ function DialogFactory(
         let isClose = await validateDialogEdit(local.dialogEl);
         if  (!isClose) return;
         
-        local.dialogEl.close()
+        local.dialogEl.close();
     }
 
     // # show, # build
@@ -103,19 +87,6 @@ function DialogFactory(
                 local.dialogEl = dialogEl;
                 local.dialogData = dialogData;
 
-                if (local.eventsMap) {
-                    local.eventsMap.onclick = {
-                        ...local.eventsMap.onclick,
-                        "close-dialog": closeDialog,
-                    };
-                }
-
-                if (typeof (DOMEvents) != 'undefined') {
-                    DOMEvents?.Listen(local.eventsMap, dialogEl);
-                }
-                if (typeof (utils) != 'undefined') {
-                    utils?.FillFormWithData?.(form, formValuesObject);
-                }
                 opt.dialogDataModifier?.(dialogData);
                 opt.onShow?.(dialogData);
                 callback?.(dialogData);
