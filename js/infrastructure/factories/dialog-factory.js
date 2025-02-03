@@ -1,4 +1,4 @@
-/* v4.4 */
+/* v4.5 */
 function DialogFactory(
     opt = {
         dialogDataModifier: null,
@@ -33,10 +33,6 @@ function DialogFactory(
     };
 
     // # function
-
-    function Configure(opt) {
-
-    }
 
     function Close() {
         local.dialogEl?.close();
