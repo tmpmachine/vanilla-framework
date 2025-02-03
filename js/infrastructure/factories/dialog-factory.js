@@ -1,4 +1,4 @@
-/* v4.5 */
+/* v4.6 */
 function DialogFactory(
     opt = {
         dialogDataModifier: null,
@@ -63,7 +63,7 @@ function DialogFactory(
         let formData = getDialogEditFormData(dialogEl);
         let returnValue = dialogEl.returnValue;
 
-        opt.onBeforeClose?.(dialogEl);
+        let returnData = opt.onBeforeClose?.(dialogEl);
 
         local.options = {};
         local.dialogEl = null;
@@ -72,6 +72,7 @@ function DialogFactory(
         return {
             ...formData,
             returnValue,
+            returnData,
         };
     }
 
