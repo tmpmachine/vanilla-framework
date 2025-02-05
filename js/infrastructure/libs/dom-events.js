@@ -1,4 +1,4 @@
-/* v1 */
+/* v1.2 */ 
 let DOMEvents = (function () {
 
     let local = {
@@ -25,18 +25,20 @@ let DOMEvents = (function () {
         },
     };
 
-    function notImplemented() {
-        console.error('Not implemented')
-    }
-
     let attachListeners = function (attr, eventType, callbacks, containerEl) {
         let elements = containerEl.querySelectorAll(`[${attr}]`);
         for (let el of elements) {
-            let callbackFunc = callbacks?.[el.getAttribute(attr)] ?? notImplemented;
+            let callbackFunc = callbacks?.[el.getAttribute(attr)];
+            if (!callbackFunc) continue;
+
             el.addEventListener(eventType, callbackFunc);
         }
     };
 
+    /** 
+        @param {any} eventsMap 
+        @param {HTMLElement} containerEl - default = document 
+    */
     function Listen(eventsMap, containerEl = document) {
         let { groupKey } = eventsMap;
         let infix = groupKey ? `-${groupKey}` : '';
