@@ -104,7 +104,7 @@ class ViewState {
 		let node = targetNode.content?.firstElementChild ?? targetNode;
 
 		if (node) {
-			node.dataset.rviewName = targetViewName;
+			node.setAttribute(this.viewDataKey, targetViewName);
 
 			let isFirstRender = !node.dataset.rendered;
 			/** @type {ViewData} */
