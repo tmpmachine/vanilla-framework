@@ -1,7 +1,7 @@
 // @ts-check
 
-// v1
-export class IdbStoreRepository {
+// v2
+class IdbStoreRepository {
 	constructor(dbManager, storeName) {
 		this.dbManager = dbManager;
 		this.storeName = storeName;
@@ -134,7 +134,7 @@ export class IdbStoreRepository {
 	}
 
 	async OpenDb_() {
-		let dbRequestResult = await this.dbManager.openDb_();
+		let dbRequestResult = await this.dbManager.OpenDb_();
 		return dbRequestResult;
 	}
 }
