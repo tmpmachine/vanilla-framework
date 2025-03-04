@@ -1,6 +1,6 @@
 // @ts-check
 
-// v2
+// v2.1
 class IdbStoreRepository {
 	constructor(dbManager, storeName) {
 		this.dbManager = dbManager;
@@ -34,19 +34,23 @@ class IdbStoreRepository {
 		return new Promise(async (resolve, reject) => {
 			let dbRequestResult = await this.OpenDb_();
 			let { db, requestId } = dbRequestResult;
-			const transaction = db.transaction([this.storeName], 'readwrite');
-			const store = transaction.objectStore(this.storeName);
-			const request = store.delete(key);
 
-			request.onsuccess = () => {
-				resolve(true);
+			try {
+				const transaction = db.transaction([this.storeName], 'readwrite');
+				const store = transaction.objectStore(this.storeName);
+				const request = store.delete(key);
+
+				request.onsuccess = () => {
+					resolve(true);
+					this.dbManager.EndRequest(requestId);
+				};
+				request.onerror = (event) => {
+					throw event.target.errorCode;
+				};
+			} catch (error) {
 				this.dbManager.EndRequest(requestId);
-			};
-			request.onerror = (event) => {
-				reject(false);
-				console.log(event.target.errorCode);
-				this.dbManager.EndRequest(requestId);
-			};
+				reject('Error storing item: ' + error);
+			}
 		});
 	}
 
@@ -55,18 +59,23 @@ class IdbStoreRepository {
 		return new Promise(async (resolve, reject) => {
 			let dbRequestResult = await this.OpenDb_();
 			let { db, requestId } = dbRequestResult;
-			const transaction = db.transaction([this.storeName], 'readwrite');
-			const store = transaction.objectStore(this.storeName);
-			const request = store.put(item);
 
-			request.onsuccess = () => {
-				resolve(true);
+			try {
+				const transaction = db.transaction([this.storeName], 'readwrite');
+				const store = transaction.objectStore(this.storeName);
+				const request = store.put(item);
+
+				request.onsuccess = () => {
+					resolve(item);
+					this.dbManager.EndRequest(requestId);
+				};
+				request.onerror = (event) => {
+					throw event.target.errorCode;
+				};
+			} catch (error) {
 				this.dbManager.EndRequest(requestId);
-			};
-			request.onerror = (event) => {
-				reject('Error storing item: ' + event.target.errorCode);
-				this.dbManager.EndRequest(requestId);
-			};
+				reject('Error storing item: ' + error);
+			}
 		});
 	}
 
@@ -77,25 +86,30 @@ class IdbStoreRepository {
 			let dbRequestResult = await this.OpenDb_();
 			let { db, requestId } = dbRequestResult;
 			const transaction = db.transaction([this.storeName], 'readonly');
-			const store = transaction.objectStore(this.storeName);
-			let cursorRequest = store.openCursor();
 
-			cursorRequest.onsuccess = (event) => {
-				let cursor = event.target.result;
+			try {
+				const store = transaction.objectStore(this.storeName);
+				let cursorRequest = store.openCursor();
 
-				if (cursor) {
-					items.push(cursor.value);
-					cursor.continue();
-				} else {
-					resolve(items);
-					this.dbManager.EndRequest(requestId);
-				}
-			};
+				cursorRequest.onsuccess = (event) => {
+					let cursor = event.target.result;
 
-			cursorRequest.onerror = (event) => {
-				reject('Error retrieving items: ' + event.target.errorCode);
+					if (cursor) {
+						items.push(cursor.value);
+						cursor.continue();
+					} else {
+						resolve(items);
+						this.dbManager.EndRequest(requestId);
+					}
+				};
+
+				cursorRequest.onerror = (event) => {
+					throw event.target.errorCode;
+				};
+			} catch (error) {
 				this.dbManager.EndRequest(requestId);
-			};
+				reject('Error retrieving items: ' + error);
+			}
 		});
 	}
 
@@ -122,13 +136,11 @@ class IdbStoreRepository {
 					this.dbManager.EndRequest(requestId);
 				};
 				request.onerror = (event) => {
-					reject('Error retrieving item: ' + event.target.errorCode);
-					this.dbManager.EndRequest(requestId);
+					throw event.target.errorCode;
 				};
 			} catch (error) {
-				console.log(error);
 				this.dbManager.EndRequest(requestId);
-				resolve(null);
+				reject('Error retrieving item: ' + error);
 			}
 		});
 	}
