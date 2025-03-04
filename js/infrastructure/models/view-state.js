@@ -1,3 +1,4 @@
+// v2
 class ViewState {
 	/**
 	 * @typedef {Object} ViewStateOption
@@ -18,7 +19,6 @@ class ViewState {
 
 	/** @param {ViewStateOption} opt */
 	constructor(opt) {
-		this.isAnimationStart = false;
 		this.containerSelector = opt.containerSelector.trim();
 		this.viewDataKey = opt.viewDataKey.trim();
 		this.onHide = opt.onHide;
@@ -28,37 +28,24 @@ class ViewState {
 	}
 
 	GetActiveNode() {
-		return document.querySelector(
-			`._rootViewContainer > [${this.viewDataKey}]:not(template)`
-		);
+		return document.querySelector(`._rootViewContainer > [${this.viewDataKey}]:not(template)`);
 	}
 
-	async Update_({ name, transitionTimeout }) {
-		if (this.isAnimationStart) return;
-
-		if (!transitionTimeout) {
-			transitionTimeout = this.defaultTransitionTimeout;
-		}
-		let nodes = Array.from(
-			document.querySelectorAll(`._rootViewContainer > [${this.viewDataKey}]`)
-		);
+	async SetActiveView(viewName) {
+		let nodes = Array.from(document.querySelectorAll(`._rootViewContainer > [${this.viewDataKey}]`));
 
 		let targetNode =
-			nodes.find((node) => node.getAttribute(this.viewDataKey) == name) ??
+			nodes.find((node) => node.getAttribute(this.viewDataKey) == viewName) ??
 			nodes.find((node) => node.tagName != 'TEMPLATE') ??
 			nodes[0];
 		let targetViewName = targetNode.getAttribute(this.viewDataKey);
 
 		if (targetNode.tagName == 'TEMPLATE') {
 			let isAlreadyActive = nodes.some(
-				(node) =>
-					node.getAttribute(this.viewDataKey) == targetViewName &&
-					node.tagName != 'TEMPLATE'
+				(node) => node.getAttribute(this.viewDataKey) == targetViewName && node.tagName != 'TEMPLATE'
 			);
 			if (isAlreadyActive) return;
 		}
-
-		let promises = [];
 
 		nodes
 			.filter((node) => node.tagName != 'TEMPLATE')
@@ -67,9 +54,7 @@ class ViewState {
 				if (viewName == targetViewName) return; // active view
 
 				let anchorNode = nodes.find(
-					(t) =>
-						t.tagName == 'TEMPLATE' &&
-						t.getAttribute(this.viewDataKey) == viewName
+					(t) => t.tagName == 'TEMPLATE' && t.getAttribute(this.viewDataKey) == viewName
 				);
 
 				if (!anchorNode) {
@@ -78,33 +63,20 @@ class ViewState {
 					node.insertAdjacentElement('beforebegin', anchorNode);
 				}
 
-				node.dataset.hidden = true;
-
-				let hidePromise = new Promise(async (resolve) => {
-					await new Promise((resolve) =>
-						window.setTimeout(resolve, transitionTimeout)
-					);
-					node.removeAttribute(this.viewDataKey);
-					this.onHide?.(
-						/** @type {ViewData} */ ({
-							node,
-							viewName: viewName,
-						})
-					);
-					anchorNode.content.append(node);
-					resolve();
-				});
-				promises.push(hidePromise);
+				node.removeAttribute(this.viewDataKey);
+				this.onHide?.(
+					/** @type {ViewData} */ ({
+						node,
+						viewName: viewName,
+					})
+				);
+				anchorNode.content.append(node);
 			});
-
-		await Promise.all(promises);
-
-		this.isAnimationStart = true;
 
 		let node = targetNode.content?.firstElementChild ?? targetNode;
 
 		if (node) {
-			node.dataset.rviewName = targetViewName;
+			node.setAttribute(this.viewDataKey, targetViewName);
 
 			let isFirstRender = !node.dataset.rendered;
 			/** @type {ViewData} */
@@ -121,19 +93,6 @@ class ViewState {
 			this.onShow?.(viewData);
 
 			node.dataset.rendered = true;
-
-			// delay 1ms to allow browser to render initial element state before starting transition
-			window.setTimeout(() => {
-				delete node.dataset.hidden;
-			}, 1);
 		}
-
-		await new Promise((resolve) =>
-			setTimeout(() => {
-				resolve();
-			}, transitionTimeout)
-		);
-
-		this.isAnimationStart = false;
 	}
 }
