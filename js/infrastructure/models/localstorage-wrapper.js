@@ -1,8 +1,13 @@
-// v2
+// v2.1
+/**
+ * @template T
+ * @class
+ */
 class LocalStorageWrapper {
 	constructor(prefix, postfix = 'data') {
 		this.postfix = postfix;
 		this.prefix = prefix ?? '';
+		/** @type {T} */
 		this.data = null;
 
 		this.SetDefaultData();
