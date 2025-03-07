@@ -1,4 +1,4 @@
-// v2.1
+// v2.2
 /**
  * @template T
  * @class
@@ -38,11 +38,7 @@ class LocalStorageWrapper {
 
 			let json = JSON.parse(value);
 
-			for (let key in this.data) {
-				if (typeof json[key] != 'undefined') {
-					this.data[key] = json[key];
-				}
-			}
+			this.data = json;
 		} catch (error) {
 			console.error('Failed to read data from storage:', error);
 		}
