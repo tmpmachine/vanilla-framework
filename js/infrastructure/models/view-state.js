@@ -1,4 +1,4 @@
-// v2
+// v2.1
 class ViewState {
 	/**
 	 * @typedef {Object} ViewStateOption
@@ -28,11 +28,11 @@ class ViewState {
 	}
 
 	GetActiveNode() {
-		return document.querySelector(`._rootViewContainer > [${this.viewDataKey}]:not(template)`);
+		return document.querySelector(`${this.containerSelector} > [${this.viewDataKey}]:not(template)`);
 	}
 
 	async SetActiveView(viewName) {
-		let nodes = Array.from(document.querySelectorAll(`._rootViewContainer > [${this.viewDataKey}]`));
+		let nodes = Array.from(document.querySelectorAll(`${this.containerSelector} > [${this.viewDataKey}]`));
 
 		let targetNode =
 			nodes.find((node) => node.getAttribute(this.viewDataKey) == viewName) ??
